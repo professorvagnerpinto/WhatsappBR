@@ -14,7 +14,7 @@ import PasswordValidator from 'password-validator';
 export class SignUp extends React.Component { //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props){
         super(props);
-        console.log('construiu o SingIn.');
+        console.log('construiu SingIn.');
         this.state ={
             nome:'',
             email:'',

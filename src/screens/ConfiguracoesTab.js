@@ -7,7 +7,7 @@ export class ConfiguracoesTab extends React.Component{ //retirar o default, ele 
 
     constructor(props) {
         super(props);
-        console.log('construiu o ConfiguracoesTab.');
+        console.log('construiu ConfiguracoesTab.');
 
         //faz o bind do comportamemto com o componente
         this.sair = this.sair.bind(this);

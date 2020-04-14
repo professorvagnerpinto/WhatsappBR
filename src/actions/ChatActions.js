@@ -31,7 +31,7 @@ export const buscarContatos = (userUid) => {
     };
 };
 
-export const createChat = (userUid1, userUid2) => {
+export const criarChat = (userUid1, userUid2) => {
     return (dispatch) => {
         //criando o chat
         let pathChatUid = firebase.database().ref('chats').push();
@@ -60,7 +60,7 @@ export const createChat = (userUid1, userUid2) => {
     };
 };
 
-export const buscaChats = (userUid) => {
+export const buscarChats = (userUid) => {
     return(dispatch)=>{
         firebase.database().ref('users').child(userUid).child('chats').on('value', (dataSnapshot) => {
             let chats = [];
@@ -80,11 +80,29 @@ export const buscaChats = (userUid) => {
     }
 };
 
-export const getActiveChat = (item) => {
+export const setActiveChat = (item) => {
     return {
         type:'setActiveChat',
         payload:{
             chatId:item.key
         }
+    };
+};
+
+export const buscarMembros = (chatUid, userUid) => {
+    return(dispatch)=>{
+        firebase.database().ref('chats').child(chatUid).child('members').once('value')
+            .then((dataSnapshot)=>{
+                dataSnapshot.forEach((childItem) => {
+                    if(childItem.key !== userUid){
+                        dispatch({
+                            type:'usersOnChat',
+                            payload:{
+                                user:childItem.key
+                            }
+                        });
+                    }
+                });
+            });
     };
 };

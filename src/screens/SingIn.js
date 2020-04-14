@@ -13,7 +13,7 @@ import * as EmailValidator from 'email-validator';
 export class SingIn extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props) {
         super(props);
-        console.log('construiu o SingIn.');
+        console.log('construiu SingIn.');
         this.state ={
             email:'',
             senha:''

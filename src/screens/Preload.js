@@ -15,7 +15,7 @@ export class Preload extends React.Component{
         super(props);
         this.routes = this.routes.bind(this); //faz o bind do comportamemto com o componente
         this.props.checkLogin();
-        console.log('construiu o Preload.');
+        console.log('construiu Preload.');
     }
 
     routes(){
