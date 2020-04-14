@@ -24,10 +24,12 @@ import Preload from "./src/screens/Preload";
 import Home from "./src/screens/Home";
 import SingIn from "./src/screens/SingIn";
 import SignUp from "./src/screens/SignUp";
+import Chat from './src/screens/Chat';
 
 let store = createStore(Reducers, applyMiddleware(ReduxThunk)); //redux e redux-thunk
 const Stack = createStackNavigator(); //navigation
 function App() {
+  console.disableYellowBox = true; //habilitar para ver advertências do react native no dispositivo
   return (
       <Provider store={store}>
           <NavigationContainer>
@@ -48,6 +50,10 @@ function App() {
                     name="SignUp"
                     component={SignUp}
                     options={SingUpStyle} />
+                <Stack.Screen
+                    name="Chat"
+                    component={Chat}
+                    options={ChatStyle} />
             </Stack.Navigator>
           </NavigationContainer>
       </Provider>
@@ -67,10 +73,17 @@ const homeStyle = {
 const SingInStyle = {
     headerLeft:false,
     title: 'Bem vindo',
-    headerTitleStyle:{color:'#003c00'}
+    headerStyle:{backgroundColor:'#2da832'},
+    headerTitleStyle:{color:'#ffe51f'}
 };
 const SingUpStyle = {
     headerLeft:false,
     title: 'Cadastre-se',
-    headerTitleStyle:{color:'#003c00'}
+    headerStyle:{backgroundColor:'#2da832'},
+    headerTitleStyle:{color:'#ffe51f'}
+};
+const ChatStyle = {
+    title: 'Conversas',
+    headerStyle:{backgroundColor:'#2da832'},
+    headerTitleStyle:{color:'#ffe51f'}
 };

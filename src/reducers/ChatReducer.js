@@ -5,13 +5,20 @@
  */
 
 const initialState ={
-    chats:[],
-    contatos: []
+    contatos: [],
+    activeChat:'',
+    chats:[]
 };
 
 const ChatReducer = (state=initialState, action) => {
     if(action.type === 'setContactList'){
         return {...state, contatos:action.payload.users};
+    }
+    if(action.type === 'setActiveChat'){
+        return {...state, activeChat:action.payload.chatId};
+    }
+    if(action.type === 'setChats'){
+        return {...state, chats:action.payload.chats};
     }
 
     return state;

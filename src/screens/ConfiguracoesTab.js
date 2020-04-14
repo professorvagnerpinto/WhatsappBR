@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, Button, Keyboard} from 'react-native';
+import {View, Button} from 'react-native';
 import {connect} from "react-redux";
 import {signOut} from "../actions/AuthActions";
 
@@ -8,6 +8,7 @@ export class ConfiguracoesTab extends React.Component{ //retirar o default, ele 
     constructor(props) {
         super(props);
         console.log('construiu o ConfiguracoesTab.');
+
         //faz o bind do comportamemto com o componente
         this.sair = this.sair.bind(this);
     }

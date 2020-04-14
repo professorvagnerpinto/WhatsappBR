@@ -8,9 +8,7 @@ const initialState = {
     email:'',
     senha:'',
     status:0,
-    uid:'',
-    signUpSuccess:0,
-    signUpError:{}
+    uid:''
 };
 
 const AuthReducer = (state=initialState, action) => {

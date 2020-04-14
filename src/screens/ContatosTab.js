@@ -16,10 +16,10 @@ export class ContatosTab extends React.Component{ //retirar o default, ele vai p
 
     contatoOnClick(item){
         this.props.createChat(this.props.uid, item.key);
+        this.props.navigation.navigate('Chat');
     }
 
     render(){
-        console.log(this.props.contatos);
         return(
             <View style={styles.container}>
                 <FlatList style={styles.list}

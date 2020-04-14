@@ -17,6 +17,7 @@ function App() {
     return (
         <Tab.Navigator
             tabBarOptions={{
+                initialRouteName:'ChatsTab',
                 activeTintColor: '#ffe51f',
                 labelStyle: { height: 10, fontSize: 9, margin:0, fontWeight:'bold'},
                 style: { backgroundColor: '#2da832' },
@@ -25,7 +26,7 @@ function App() {
             <Tab.Screen
                 name="ChatsTab"
                 component={ChatsTab}
-                options={{title:'Chats'}} />
+                options={{title:'Conversas'}} />
             <Tab.Screen
                 name="ContatosTab"
                 component={ContatosTab}

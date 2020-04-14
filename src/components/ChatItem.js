@@ -7,7 +7,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
-export default class ContatoItem extends React.Component{
+export default class ChatItem extends React.Component{
     constructor(props) {
         super(props);
     }
@@ -15,7 +15,7 @@ export default class ContatoItem extends React.Component{
     render(){
         return(
             <TouchableOpacity underlayColor={'#ffe51f'} style={styles.button} onPress={()=>{this.props.onPress(this.props.data)}} >
-                <Text>{this.props.data.nome}</Text>
+                <Text>{this.props.data.key}</Text>
             </TouchableOpacity>
         );
     }

@@ -8,28 +8,47 @@ import React from 'react';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import {connect} from "react-redux";
 import {checkLogin} from "../actions/AuthActions";
+import {buscaChats, getActiveChat} from '../actions/ChatActions';
+import ChatItem from '../components/ChatItem';
+
 
 export class ChatsTab extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props) {
         super(props);
         console.log('construiu o ChatsTab.');
+
+        //busca todos os chats do usuário logado
+        this.props.buscaChats(this.props.uid);
+
+        //faz o bind do comportamemto com o componente
+        this.chatOnClick = this.chatOnClick.bind(this);
+    }
+
+    chatOnClick(item){
+        this.props.getActiveChat(item);
+        this.props.navigation.navigate('Chat');
     }
 
     render(){
         return(
             <View style={styles.container}>
                 <Text>Status={this.props.status}  uid={this.props.uid}</Text>
+                <FlatList
+                    data={this.props.chats}
+                    renderItem={({item})=><ChatItem data={item} onPress={this.chatOnClick} />}
+                />
             </View>
         );
     }
 }
 const mapStateToProps = (state) => { //mapeia os states do reducer para as props desse componente
     return {
+        status:state.auth.status,
         uid:state.auth.uid,
-        status:state.auth.status
+        chats:state.chat.chats
     };
 };
-const ChatsTabConnect = connect(mapStateToProps, {checkLogin})(ChatsTab); //conecta os dois componentes (suas props)
+const ChatsTabConnect = connect(mapStateToProps, {checkLogin, buscaChats, getActiveChat})(ChatsTab); //conecta os dois componentes (suas props)
 export default ChatsTabConnect; //exporta o componente como padrão
 
 const styles = StyleSheet.create({
