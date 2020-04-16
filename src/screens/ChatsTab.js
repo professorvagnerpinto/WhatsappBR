@@ -7,7 +7,6 @@
 import React from 'react';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import {connect} from "react-redux";
-import {checkLogin} from "../actions/AuthActions";
 import {buscarChats, setActiveChat} from '../actions/ChatActions';
 import ChatItem from '../components/ChatItem';
 
@@ -25,8 +24,8 @@ export class ChatsTab extends React.Component{ //retirar o default, ele vai para
     }
 
     chatOnClick(item){
-        this.props.setActiveChat(item);
-        this.props.navigation.navigate('Chat');
+        this.props.setActiveChat(item.key);
+        this.props.navigation.navigate('Chat',{title:item.title});
     }
 
     render(){
@@ -48,7 +47,7 @@ const mapStateToProps = (state) => { //mapeia os states do reducer para as props
         chats:state.chat.chats
     };
 };
-const ChatsTabConnect = connect(mapStateToProps, {checkLogin, buscarChats, setActiveChat})(ChatsTab); //conecta os dois componentes (suas props)
+const ChatsTabConnect = connect(mapStateToProps, {buscarChats, setActiveChat})(ChatsTab); //conecta os dois componentes (suas props)
 export default ChatsTabConnect; //exporta o componente como padrão
 
 const styles = StyleSheet.create({

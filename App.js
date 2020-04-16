@@ -53,7 +53,7 @@ function App() {
                 <Stack.Screen
                     name="Chat"
                     component={Chat}
-                    options={ChatStyle} />
+                    options={Chat.navigationOptions} />
             </Stack.Navigator>
           </NavigationContainer>
       </Provider>
@@ -79,11 +79,6 @@ const SingInStyle = {
 const SingUpStyle = {
     headerLeft:false,
     title: 'Cadastre-se',
-    headerStyle:{backgroundColor:'#2da832'},
-    headerTitleStyle:{color:'#ffe51f'}
-};
-const ChatStyle = {
-    title: 'Conversas',
     headerStyle:{backgroundColor:'#2da832'},
     headerTitleStyle:{color:'#ffe51f'}
 };

@@ -31,30 +31,36 @@ export const buscarContatos = (userUid) => {
     };
 };
 
-export const criarChat = (userUid1, userUid2) => {
+export const criarChat = (user1key, user2key) => {
     return (dispatch) => {
         //criando o chat
         let pathChatUid = firebase.database().ref('chats').push();
-        pathChatUid.child('members').child(userUid1).set({
-            id:userUid1
+        pathChatUid.child('members').child(user1key).set({
+            id:user1key
         });
-        pathChatUid.child('members').child(userUid2).set({
-            id:userUid2
+        pathChatUid.child('members').child(user2key).set({
+            id:user2key
         });
 
-        //associando o chat aos membros
-        firebase.database().ref('users').child(userUid1).child('chats').child(pathChatUid.key).set({
-            id:pathChatUid.key
+        //associando o chat ao membro
+        firebase.database().ref('users').child(user2key).once('value').then((dataSnapshot) => {
+            firebase.database().ref('users').child(user1key).child('chats').child(pathChatUid.key).set({
+                id:pathChatUid.key,
+                title:dataSnapshot.val().nome
+            });
         });
-        firebase.database().ref('users').child(userUid2).child('chats').child(pathChatUid.key).set({
-            id:pathChatUid.key
+        firebase.database().ref('users').child(user1key).once('value').then((dataSnapshot) => {
+            firebase.database().ref('users').child(user2key).child('chats').child(pathChatUid.key).set({
+                id:pathChatUid.key,
+                title:dataSnapshot.val().nome
+            });
         });
 
         //atualiza o reducer com o chat ativo
         dispatch({
             type:'setActiveChat',
             payload:{
-                chatId:pathChatUid.key
+                activeChat:pathChatUid.key
             }
         });
     };
@@ -67,7 +73,7 @@ export const buscarChats = (userUid) => {
             dataSnapshot.forEach((childItem)=>{
                 chats.push({
                     key:childItem.key,
-                    id:childItem.val().id
+                    title:childItem.val().title
                 });
             });
             dispatch({
@@ -80,29 +86,11 @@ export const buscarChats = (userUid) => {
     }
 };
 
-export const setActiveChat = (item) => {
+export const setActiveChat = (itemKey) => {
     return {
         type:'setActiveChat',
         payload:{
-            chatId:item.key
+            activeChat:itemKey
         }
-    };
-};
-
-export const buscarMembros = (chatUid, userUid) => {
-    return(dispatch)=>{
-        firebase.database().ref('chats').child(chatUid).child('members').once('value')
-            .then((dataSnapshot)=>{
-                dataSnapshot.forEach((childItem) => {
-                    if(childItem.key !== userUid){
-                        dispatch({
-                            type:'usersOnChat',
-                            payload:{
-                                user:childItem.key
-                            }
-                        });
-                    }
-                });
-            });
     };
 };

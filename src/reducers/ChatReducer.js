@@ -8,7 +8,7 @@ const initialState ={
     contatos: [],
     activeChat:'',
     chats:[],
-    otherUserOnChat:''
+    otherUserOnChat:{}
 };
 
 const ChatReducer = (state=initialState, action) => {
@@ -16,13 +16,10 @@ const ChatReducer = (state=initialState, action) => {
         return {...state, contatos:action.payload.users};
     }
     if(action.type === 'setActiveChat'){
-        return {...state, activeChat:action.payload.chatId};
+        return {...state, activeChat:action.payload.activeChat};
     }
     if(action.type === 'setChats'){
         return {...state, chats:action.payload.chats};
-    }
-    if(action.type === 'usersOnChat'){
-        return {...state, otherUserOnChat:action.payload.user};
     }
 
     return state;

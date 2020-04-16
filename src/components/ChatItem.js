@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableHighlight} from 'react-native';
 
 export default class ChatItem extends React.Component{
     constructor(props) {
@@ -14,9 +14,9 @@ export default class ChatItem extends React.Component{
 
     render(){
         return(
-            <TouchableOpacity underlayColor={'#ffe51f'} style={styles.button} onPress={()=>{this.props.onPress(this.props.data)}} >
-                <Text>{this.props.data.key}</Text>
-            </TouchableOpacity>
+            <TouchableHighlight underlayColor={'#2da832'} style={styles.button} onPress={()=>{this.props.onPress(this.props.data)}} >
+                <Text>{this.props.data.title}</Text>
+            </TouchableHighlight>
         );
     }
 }
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'flex-start',
         padding:5,
-        margin:5,
         borderBottomWidth:2,
         borderBottomColor:'#2da832'
     }

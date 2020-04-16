@@ -11,6 +11,7 @@ const firebaseConfig = {
         Coloque aqui as credenciais do teu projeto no Firebase.
      */
 
+
 };
 
 //inicializa o serviço

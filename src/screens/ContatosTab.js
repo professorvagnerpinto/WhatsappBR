@@ -7,8 +7,10 @@ import ContatoItem from "../components/ContatoItem";
 export class ContatosTab extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props) {
         super(props);
-        this.props.buscarContatos(this.props.uid);
         console.log('construiu ContatosTab.');
+
+        //busca todos os contatos do usuário logado
+        this.props.buscarContatos(this.props.uid);
 
         //faz o bind do comportamemto com o componente
         this.contatoOnClick = this.contatoOnClick.bind(this);
