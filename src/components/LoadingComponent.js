@@ -22,14 +22,14 @@ export default class LoadingComponent extends React.Component{
 
 const styles = StyleSheet.create({
     loadingView:{
-        position:'absolute',
-        top:0,
-        bottom:0,
-        left:0,
-        right:0,
-        justifyContent:'center',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
         alignItems:'center',
-        backgroundColor:'#000000',
         opacity:0.5
     }
 });

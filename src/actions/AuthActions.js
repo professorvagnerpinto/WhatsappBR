@@ -81,7 +81,7 @@ export const signOut = () => {
 };
 
 //cadastrar no firebase
-export const cadastrar = (name, email, senha) => {
+export const cadastrar = (name, email, senha, callback) => {
     return (dispatch) => {
         firebase.auth().createUserWithEmailAndPassword(email, senha)
             .then(() => {
@@ -90,6 +90,7 @@ export const cadastrar = (name, email, senha) => {
                     nome:name
                 })
                     .then(() => {
+                        callback(); //para tratar do loading
                         dispatch({
                             type:'changeUid',
                             payload:{
@@ -98,11 +99,13 @@ export const cadastrar = (name, email, senha) => {
                         });
                     })
                     .catch((error) => {
+                        callback(); //para tratar do loading
                         console.log('Erro em cadastrar, firebase.database(), ' + error.code);
                         alert('Ops, erro. Por favor, contate nosso SAC.');
                     });
             })
             .catch((error) => {
+                callback(); //para tratar do loading
                 console.log('Erro ao criar o user firebase.' + error.code);
                 switch (error.code) {
                     case 'auth/email-already-in-use':

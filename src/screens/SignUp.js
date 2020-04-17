@@ -57,7 +57,7 @@ export class SignUp extends React.Component { //retirar o default, ele vai para 
                         .is().not().oneOf(['senha5', 'senha123']);  // Blacklist these values
                     if(schema.validate(this.state.senha)){
                         this.setState({loading:true});
-                        this.props.cadastrar(this.state.nome, this.state.email, this.state.senha);
+                        this.props.cadastrar(this.state.nome, this.state.email, this.state.senha, ()=>{this.setState({loading:false})});
                     }
                 }else{
                     alert('As senhas são diferentes. Por favor, digite-as novamente.');
