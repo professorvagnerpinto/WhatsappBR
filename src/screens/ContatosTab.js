@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {connect} from "react-redux";
-import {buscarContatos, criarChat} from "../actions/ChatActions";
+import {buscarContatos, criarChat, setActiveChat} from '../actions/ChatActions';
 import ContatoItem from "../components/ContatoItem";
 
 export class ContatosTab extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
@@ -17,8 +17,21 @@ export class ContatosTab extends React.Component{ //retirar o default, ele vai p
     }
 
     contatoOnClick(item){
-        this.props.criarChat(this.props.uid, item.key);
-        this.props.navigation.navigate('Chat');
+        let flag = true;
+        let ActiveChat='';
+        this.props.chats.forEach( (chat) => {
+            if(chat.uid === item.key){
+                flag = false;
+                ActiveChat = chat.key;
+            }
+        });
+        if(flag){
+            this.props.criarChat(this.props.uid, item.key);
+            this.props.navigation.navigate('Chat');
+        }else{
+            this.props.setActiveChat(ActiveChat);
+            this.props.navigation.navigate('Chat',{title:item.nome});
+        }
     }
 
     render(){
@@ -35,10 +48,11 @@ export class ContatosTab extends React.Component{ //retirar o default, ele vai p
 const mapStateToProps = (state) => { //mapeia os states do reducer para as props desse componente
     return {
         uid:state.auth.uid,
-        contatos:state.chat.contatos
+        contatos:state.chat.contatos,
+        chats:state.chat.chats
     };
 };
-const ContatosTabConnect = connect(mapStateToProps, {buscarContatos, criarChat})(ContatosTab); //conecta os dois componentes (suas props)
+const ContatosTabConnect = connect(mapStateToProps, {buscarContatos, criarChat, setActiveChat})(ContatosTab); //conecta os dois componentes (suas props)
 export default ContatosTabConnect; //exporta o componente como padrão
 
 const styles = StyleSheet.create({

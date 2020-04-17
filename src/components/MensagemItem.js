@@ -13,10 +13,11 @@ export class MensagemItem extends React.Component{ //retirar o default, ele vai 
         super(props);
         this.state = {
             bgColor:'#ffe51f',
-            alignSelf:'flex-start'
-        }
+            alignSelf:'flex-start',
+            date:this.formatDate(this.props.data.date)
+        };
 
-        if(this.props.data.userUid === this.props.uid){
+        if(this.props.data.uid === this.props.uid){
             let s = this.state;
             s.bgColor = '#2da832';
             s.alignSelf = 'flex-end';
@@ -24,12 +25,26 @@ export class MensagemItem extends React.Component{ //retirar o default, ele vai 
         }
     }
 
+    formatDate(originalDate){
+        let cDate = new Date();
+        let today = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate(); //YYYY-MM-DD
+        let mDate = originalDate.split(' '); //resulta em [data, hora]
+
+        let newDate = mDate[1].substring(0,5); //resulta em HH:mm
+
+        if(today !== mDate[0]){
+            let date = mDate[0].split('-'); //[year, month, day]
+            newDate = date[2] + '/' + date[1] + '/' + date[0] + ' ' + newDate;
+        }
+
+        return newDate;
+    }
+
     render(){
-        console.log('state= ' + this.state);
         return(
             <View style={[styles.container, {backgroundColor:this.state.bgColor}, {alignSelf:this.state.alignSelf}]}>
                 <Text style={styles.msgText}>{this.props.data.msg}</Text>
-                <Text style={styles.dateText}>{this.props.data.date}</Text>
+                <Text style={styles.dateText}>{this.state.date}</Text>
             </View>
         );
     }

@@ -1,9 +1,10 @@
 
 
 import React from 'react';
-import {StyleSheet, View, FlatList, TextInput, TouchableHighlight, Image} from 'react-native';
+import {StyleSheet, KeyboardAvoidingView, Platform, View, FlatList, TextInput, TouchableHighlight, Image} from 'react-native';
 import {connect} from 'react-redux';
 import MensagemItem from '../components/MensagemItem';
+import {monitorChatOff, monitorChatOn, sendMessage} from '../actions/ChatActions';
 
 export class Chat extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
 
@@ -20,30 +21,49 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         super(props);
         console.log('Construiu Chat');
         this.state = {
-            msg:'',
-            msgs:[
-                {key:1, userUid:1, date:'16/04/2020', msg:'Oi, tudo bem?'},
-                {key:2, userUid:this.props.uid, date:'16/04/2020', msg: 'Tudo, e você?'},
-                {key:2, userUid:this.props.uid, date:'16/04/2020', msg: 'Qq manda?'},
-                {key:3, userUid:1, date:'16/04/2020', msg: 'Vai na festa hoje? Vai estar toda turma lá. Disseram que vão chegar cedo.'}]
+            msg:''
         };
+
+        this.sendMsg = this.sendMsg.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.monitorChatOn(this.props.activeChat);
+    }
+
+    componentWillUnmount(){
+        this.props.monitorChatOff(this.props.activeChat);
+    }
+
+    sendMsg(){
+        this.props.sendMessage(this.state.msg, this.props.uid, this.props.activeChat);
+        let s = this.state;
+        s.msg = '';
+        this.setState(s);
     }
 
     render(){
+        //para resolver o problema do teclado sobre as mensagens no ios
+        let areaBehavior = Platform.select({ios:'padding', android:null});
+        let areaOffset = Platform.select({ios:64, android:null});
+
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior={areaBehavior} keyboardVerticalOffset={areaOffset}>
                 <FlatList
+                    ref={(ref)=>{this.flatArea = ref}}
+                    onContentSizeChange={()=>{this.flatArea.scrollToEnd({animated:true})}}
+                    onLayout={()=>{this.flatArea.scrollToEnd({animated:true})}}
                     style={styles.chatArea}
-                    data={this.state.msgs}
+                    data={this.props.messages}
                     renderItem={({item})=><MensagemItem data={item} />}
                 />
                 <View style={styles.sendArea}>
-                    <TextInput ref={input => { this.textInputMsg = input }} style={styles.sendInput} onChangeText={(msg)=>{this.setState({msg})}} />
-                    <TouchableHighlight underlayColor={'#2da832'} style={styles.sendButton} onPress={()=>{alert('msg= ' + this.state.msg);this.textInputMsg.clear();}} >
+                    <TextInput value={this.state.msg} style={styles.sendInput} onChangeText={(msg)=>{this.setState({msg})}} />
+                    <TouchableHighlight underlayColor={'#2da832'} style={styles.sendButton} onPress={this.sendMsg}>
                         <Image source={require('../../assets/images/icon_send.png')} style={styles.sendButtonImage} />
                     </TouchableHighlight>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 }
@@ -51,10 +71,11 @@ const mapStateToProps = (state) => { //mapeia os states do reducer para as props
     return {
         activeChat:state.chat.activeChat,
         uid:state.auth.uid,
-        chats:state.chat.chats
+        chats:state.chat.chats,
+        messages:state.chat.activeChatMessages
     };
 };
-const ChatConnect = connect(mapStateToProps, {})(Chat); //conecta os dois componentes (suas props)
+const ChatConnect = connect(mapStateToProps, {sendMessage, monitorChatOn, monitorChatOff})(Chat); //conecta os dois componentes (suas props)
 export default ChatConnect; //exporta o componente como padrão
 
 const styles = StyleSheet.create({

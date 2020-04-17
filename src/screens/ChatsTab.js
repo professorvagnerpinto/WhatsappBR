@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
+import {StyleSheet, View, FlatList} from 'react-native';
 import {connect} from "react-redux";
 import {buscarChats, setActiveChat} from '../actions/ChatActions';
 import ChatItem from '../components/ChatItem';
@@ -31,7 +31,6 @@ export class ChatsTab extends React.Component{ //retirar o default, ele vai para
     render(){
         return(
             <View style={styles.container}>
-                <Text>Status={this.props.status}  uid={this.props.uid}</Text>
                 <FlatList
                     data={this.props.chats}
                     renderItem={({item})=><ChatItem data={item} onPress={this.chatOnClick} />}
