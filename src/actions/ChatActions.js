@@ -10,8 +10,7 @@ export const buscarContatos = (userUid) => {
     return (dispatch) => {
         firebase.database().ref('users')
             .orderByChild('nome')
-            .once('value')
-            .then((dataSnapshot)=>{
+            .on('value', (dataSnapshot) => {
                 let users=[];
                 dataSnapshot.forEach((childItem)=>{
                     if(userUid !== childItem.key){
@@ -27,7 +26,7 @@ export const buscarContatos = (userUid) => {
                         users:users
                     }
                 });
-        });
+            });
     };
 };
 
@@ -70,21 +69,23 @@ export const criarChat = (user1key, user2key) => {
 
 export const buscarChats = (userUid) => {
     return(dispatch)=>{
-        firebase.database().ref('users').child(userUid).child('chats').on('value', (dataSnapshot) => {
-            let chats = [];
-            dataSnapshot.forEach((childItem)=>{
-                chats.push({
-                    key:childItem.key,
-                    title:childItem.val().title,
-                    uid:childItem.val().uid
+        firebase.database().ref('users').child(userUid).child('chats')
+            .orderByChild('title')
+            .on('value', (dataSnapshot) => {
+                let chats = [];
+                dataSnapshot.forEach((childItem)=>{
+                    chats.push({
+                        key:childItem.key,
+                        title:childItem.val().title,
+                        uid:childItem.val().uid
+                    });
                 });
-            });
-            dispatch({
-                type:'setChats',
-                payload:{
-                    chats:chats
-                }
-            });
+                dispatch({
+                    type:'setChats',
+                    payload:{
+                        chats:chats
+                    }
+                });
         });
     }
 };
@@ -99,15 +100,16 @@ export const setActiveChat = (itemKey) => {
 };
 
 export const sendMessage = (msg, userid1, activeChat) => {
-    let cDate = new Date;
-    //YYYY-MM-DD HH:ii:SS
-    let currentDate = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate() + ' ' + cDate.getHours() + ':' + cDate.getMinutes() + ':' + cDate.getSeconds();
-    firebase.database().ref('chats').child(activeChat).child('messages').push().set({
-        date: currentDate,
-        msg:msg,
-        uid:userid1
-    });
-
+    return () =>{ //como é assíncrono tem que colocar o callback para o redux-thunk, senão o Redux emite uma exceção
+        let cDate = new Date;
+        //YYYY-MM-DD HH:ii:SS
+        let currentDate = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate() + ' ' + cDate.getHours() + ':' + cDate.getMinutes() + ':' + cDate.getSeconds();
+        firebase.database().ref('chats').child(activeChat).child('messages').push().set({
+            date: currentDate,
+            msg:msg,
+            uid:userid1
+        });
+    };
 };
 
 export const monitorChatOn = (activeChat) => {
@@ -122,6 +124,7 @@ export const monitorChatOn = (activeChat) => {
                     uid:childItem.val().uid
                 });
             });
+            console.log('Dispatcht in ChatActions: ' + messages);
             dispatch({
                 type:'activeChatMessages',
                 payload:{

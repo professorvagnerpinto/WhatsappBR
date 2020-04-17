@@ -30,11 +30,12 @@ export const checkLogin = () =>{
 };
 
 //logar no firebase
-export const entrar = (email, senha) => {
+export const entrar = (email, senha, callback) => {
     return (dispatch) => {
         firebase.auth().signInWithEmailAndPassword(email, senha)
             .then( () => {
                 let uid = firebase.auth().currentUser.uid;
+                callback(); //para tratar do loading
                 dispatch({
                     type:'changeUid',
                     payload:{
@@ -43,6 +44,7 @@ export const entrar = (email, senha) => {
                 });
             })
             .catch( (error) => {
+                callback(); //para tratar do loading
                 switch (error.code) {
                     case 'auth/invalid-email':
                         alert('Email inválido.');

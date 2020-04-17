@@ -22,6 +22,7 @@ const ChatReducer = (state=initialState, action) => {
         return {...state, chats:action.payload.chats};
     }
     if(action.type === 'activeChatMessages'){
+        console.log('activeChatMessages in chatReducers: ' + action.payload.msgs);
         return {...state, activeChatMessages:action.payload.msgs};
     }
 

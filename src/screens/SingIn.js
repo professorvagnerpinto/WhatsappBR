@@ -9,6 +9,7 @@ import {StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Keyboard} fr
 import {connect} from "react-redux";
 import {entrar} from "../actions/AuthActions";
 import * as EmailValidator from 'email-validator';
+import LoadingComponent from '../components/LoadingComponent';
 
 export class SingIn extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props) {
@@ -16,7 +17,8 @@ export class SingIn extends React.Component{ //retirar o default, ele vai para o
         console.log('construiu SingIn.');
         this.state ={
             email:'',
-            senha:''
+            senha:'',
+            loading:false
         };
 
         //faz o bind do comportamemto com o componente
@@ -37,7 +39,8 @@ export class SingIn extends React.Component{ //retirar o default, ele vai para o
         if(this.state.email === '' || this.state.senha === ''){
             alert('Por favor, preencha todos os campos.');
         }else if(EmailValidator.validate(this.state.email)){
-            this.props.entrar(this.state.email, this.state.senha);
+            this.setState({loading:true});
+            this.props.entrar(this.state.email, this.state.senha, ()=>{this.setState({loading:false})});
         }else{
             alert('Digite um email válido.');
         }
@@ -62,6 +65,7 @@ export class SingIn extends React.Component{ //retirar o default, ele vai para o
                         <Text style={styles.textButton}>Cadastrar</Text>
                     </TouchableOpacity>
                 </View>
+                <LoadingComponent visible={this.state.loading} />
             </View>
         );
     }

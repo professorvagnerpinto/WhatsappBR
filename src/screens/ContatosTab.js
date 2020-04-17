@@ -27,7 +27,7 @@ export class ContatosTab extends React.Component{ //retirar o default, ele vai p
         });
         if(flag){
             this.props.criarChat(this.props.uid, item.key);
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('Chat', {title:item.nome});
         }else{
             this.props.setActiveChat(ActiveChat);
             this.props.navigation.navigate('Chat',{title:item.nome});

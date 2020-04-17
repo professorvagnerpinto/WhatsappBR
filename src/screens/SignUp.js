@@ -10,6 +10,7 @@ import {connect} from "react-redux";
 import {cadastrar} from "../actions/AuthActions";
 import * as EmailValidator from 'email-validator';
 import PasswordValidator from 'password-validator';
+import LoadingComponent from '../components/LoadingComponent';
 
 export class SignUp extends React.Component { //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props){
@@ -19,7 +20,8 @@ export class SignUp extends React.Component { //retirar o default, ele vai para 
             nome:'',
             email:'',
             senha:'',
-            confirmaSenha:""
+            confirmaSenha:'',
+            loading:false
         };
 
         //faz o bind do comportamemto com o componente
@@ -54,6 +56,7 @@ export class SignUp extends React.Component { //retirar o default, ele vai para 
                         .has().not().spaces() // Should not have spaces
                         .is().not().oneOf(['senha5', 'senha123']);  // Blacklist these values
                     if(schema.validate(this.state.senha)){
+                        this.setState({loading:true});
                         this.props.cadastrar(this.state.nome, this.state.email, this.state.senha);
                     }
                 }else{
@@ -90,6 +93,7 @@ export class SignUp extends React.Component { //retirar o default, ele vai para 
                         <Text style={styles.textButton}>Cadastrar</Text>
                     </TouchableOpacity>
                 </View>
+                <LoadingComponent visible={this.state.loading} />
             </View>
         );
     }
