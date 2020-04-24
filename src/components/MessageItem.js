@@ -8,7 +8,7 @@ import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {connect} from 'react-redux';
 
-export class MensagemItem extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
+export class MessageItem extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
     constructor(props) {
         super(props);
         this.state = {
@@ -43,7 +43,8 @@ export class MensagemItem extends React.Component{ //retirar o default, ele vai 
     render(){
         return(
             <View style={[styles.container, {backgroundColor:this.state.bgColor}, {alignSelf:this.state.alignSelf}]}>
-                <Text style={styles.msgText}>{this.props.data.msg}</Text>
+                {this.props.data.type === 'text' && <Text style={styles.msgText}>{this.props.data.msg}</Text>}
+                {this.props.data.type === 'image'&& <Text style={styles.msgText}>(Imagem aqui)</Text>}
                 <Text style={styles.dateText}>{this.state.date}</Text>
             </View>
         );
@@ -54,7 +55,7 @@ const mapStateToProps = (state) => { //mapeia os states do reducer para as props
         uid:state.auth.uid
     };
 };
-const MensagemItemConnect = connect(mapStateToProps, {})(MensagemItem); //conecta os dois componentes (suas props)
+const MensagemItemConnect = connect(mapStateToProps, {})(MessageItem); //conecta os dois componentes (suas props)
 export default MensagemItemConnect; //exporta o componente como padrão
 
 

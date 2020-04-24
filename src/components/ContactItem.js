@@ -7,7 +7,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableHighlight} from 'react-native';
 
-export default class ContatoItem extends React.Component{
+export default class ContactItem extends React.Component{
     constructor(props) {
         super(props);
     }

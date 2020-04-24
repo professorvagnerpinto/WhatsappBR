@@ -8,9 +8,8 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import ChatsTab from "./ChatsTab";
-import ContatosTab from "./ContatosTab";
-import ConfiguracoesTab from "./ConfiguracoesTab";
-
+import ContactsTab from "./ContactsTab";
+import SettingsTab from "./SettingsTab";
 
 const Tab = createMaterialTopTabNavigator();
 function App() {
@@ -26,14 +25,15 @@ function App() {
             <Tab.Screen
                 name="ChatsTab"
                 component={ChatsTab}
-                options={{title:'Conversas'}} />
+                options={{title:'Conversas'}}
+            />
             <Tab.Screen
-                name="ContatosTab"
-                component={ContatosTab}
+                name="ContactsTab"
+                component={ContactsTab}
                 options={{title:'Contatos'}} />
             <Tab.Screen
-                name="ConfiguracoesTab"
-                component={ConfiguracoesTab}
+                name="SettingsTab"
+                component={SettingsTab}
                 options={{title:'Configurações'}} />
         </Tab.Navigator>
     );

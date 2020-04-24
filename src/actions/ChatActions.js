@@ -6,7 +6,7 @@
 
 import firebase from '../services/FirebaseConnetion';
 
-export const buscarContatos = (userUid) => {
+export const buscarContatos = (userUid, callback) => {
     return (dispatch) => {
         firebase.database().ref('users')
             .orderByChild('nome')
@@ -20,6 +20,7 @@ export const buscarContatos = (userUid) => {
                         });
                     }
                 });
+                callback(); //para tratar do loading
                 dispatch({
                     type:'setContactList',
                     payload:{
@@ -67,7 +68,7 @@ export const criarChat = (user1key, user2key) => {
     };
 };
 
-export const buscarChats = (userUid) => {
+export const buscarChats = (userUid, callback) => {
     return(dispatch)=>{
         firebase.database().ref('users').child(userUid).child('chats')
             .orderByChild('title')
@@ -80,6 +81,7 @@ export const buscarChats = (userUid) => {
                         uid:childItem.val().uid
                     });
                 });
+                callback(); //para tratar do loading
                 dispatch({
                     type:'setChats',
                     payload:{
@@ -99,32 +101,40 @@ export const setActiveChat = (itemKey) => {
     };
 };
 
-export const sendMessage = (msg, userid1, activeChat) => {
+export const sendMessage = (msg, activeChat) => {
     return () =>{ //como é assíncrono tem que colocar o callback para o redux-thunk, senão o Redux emite uma exceção
-        let cDate = new Date;
-        //YYYY-MM-DD HH:ii:SS
-        let currentDate = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate() + ' ' + cDate.getHours() + ':' + cDate.getMinutes() + ':' + cDate.getSeconds();
-        firebase.database().ref('chats').child(activeChat).child('messages').push().set({
-            date: currentDate,
-            msg:msg,
-            uid:userid1
-        });
+        firebase.database().ref('chats').child(activeChat).child('messages').push().set(msg);
     };
 };
 
-export const monitorChatOn = (activeChat) => {
+export const monitorChatOn = (activeChat, callback) => {
     return (dispatch) => {
         firebase.database().ref('chats').child(activeChat).child('messages').orderByChild('date').on('value', (dataSnapshot) => {
             let messages = [];
             dataSnapshot.forEach((childItem)=>{
-                messages.push({
-                    key:childItem.key,
-                    date:childItem.val().date,
-                    msg:childItem.val().msg,
-                    uid:childItem.val().uid
-                });
+                switch (childItem.val().type) {
+                    case 'text':
+                        messages.push({
+                            key:childItem.key,
+                            date:childItem.val().date,
+                            type:childItem.val().type,
+                            msg:childItem.val().msg,
+                            uid:childItem.val().uid
+                        });
+                        break;
+                    case 'image':
+                        messages.push({
+                            key:childItem.key,
+                            date:childItem.val().date,
+                            type:childItem.val().type,
+                            msg:childItem.val().msg,
+                            uid:childItem.val().uid,
+                            url:childItem.val().url
+                        });
+                        break;
+                }
             });
-            console.log('Dispatcht in ChatActions: ' + messages);
+            callback(); //para tratar do loading
             dispatch({
                 type:'activeChatMessages',
                 payload:{

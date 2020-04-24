@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, View, FlatList} from 'react-native';
+import {StyleSheet, View, FlatList, ActivityIndicator} from 'react-native';
 import {connect} from "react-redux";
 import {buscarChats, setActiveChat} from '../actions/ChatActions';
 import ChatItem from '../components/ChatItem';
@@ -15,12 +15,19 @@ export class ChatsTab extends React.Component{ //retirar o default, ele vai para
     constructor(props) {
         super(props);
         console.log('construiu ChatsTab.');
-
-        //busca todos os chats do usuário logado
-        this.props.buscarChats(this.props.uid);
+        this.state = {
+            loading:true
+        };
 
         //faz o bind do comportamemto com o componente
         this.chatOnClick = this.chatOnClick.bind(this);
+    }
+
+    componentDidMount(){
+        //busca todos os chats do usuário logado
+        this.props.buscarChats(this.props.uid, ()=>{
+            this.setState({loading:false});
+        });
     }
 
     chatOnClick(item){
@@ -31,6 +38,7 @@ export class ChatsTab extends React.Component{ //retirar o default, ele vai para
     render(){
         return(
             <View style={styles.container}>
+                {this.state.loading && <ActivityIndicator size="large" color="#104eb8"/>}
                 <FlatList
                     data={this.props.chats}
                     renderItem={({item})=><ChatItem data={item} onPress={this.chatOnClick} />}

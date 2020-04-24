@@ -12,8 +12,8 @@ export default class LoadingComponent extends React.Component{
     render(){
         return (
             <Modal animationType="none" transparent visible={this.props.visible}>
-                <View styles={styles.loadingView}>
-                    <ActivityIndicator size="large" color="#1874cd"/>
+                <View style={styles.loadingView}>
+                    <ActivityIndicator size="large" color="#104eb8"/>
                 </View>
             </Modal>
         );
@@ -21,15 +21,10 @@ export default class LoadingComponent extends React.Component{
 }
 
 const styles = StyleSheet.create({
-    loadingView:{
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'transparent',
-        justifyContent: 'center',
+    loadingView: {
+        flex: 1,
         alignItems:'center',
-        opacity:0.5
+        justifyContent:'center',
+        backgroundColor: 'rgba(0,0,0,0.5)' //R,G,B,alfa
     }
 });

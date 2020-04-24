@@ -1,9 +1,19 @@
 
 
 import React from 'react';
-import {StyleSheet, KeyboardAvoidingView, Platform, View, FlatList, TextInput, TouchableHighlight, Image} from 'react-native';
+import {
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    View,
+    FlatList,
+    TextInput,
+    TouchableHighlight,
+    Image,
+    ActivityIndicator,
+} from 'react-native';
 import {connect} from 'react-redux';
-import MensagemItem from '../components/MensagemItem';
+import MessageItem from '../components/MessageItem';
 import {monitorChatOff, monitorChatOn, sendMessage} from '../actions/ChatActions';
 
 export class Chat extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
@@ -21,14 +31,20 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         super(props);
         console.log('Construiu Chat');
         this.state = {
-            msg:''
+            msg:'',
+            loading:true,
+            type:'text'
         };
 
+        //faz o bind do comportamemto com o componente
         this.sendMsg = this.sendMsg.bind(this);
+        this.pickerImage = this.pickerImage.bind(this);
     }
 
     componentDidMount(){
-        this.props.monitorChatOn(this.props.activeChat);
+        this.props.monitorChatOn(this.props.activeChat, ()=>{
+            this.setState({loading:false});
+        });
     }
 
     componentWillUnmount(){
@@ -36,10 +52,41 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
     }
 
     sendMsg(){
-        this.props.sendMessage(this.state.msg, this.props.uid, this.props.activeChat);
         let s = this.state;
+        let msg = '';
+        //TODO tirar o bug do zero, como em 17:09 (retirado, falta testar em um horário apropriado)
+        let cDate = new Date;
+        //antes formata para evitar 0x como x
+        let minute = (cDate.getMinutes() < 10 ? '0'+cDate.getMinutes() : cDate.getMinutes());
+        let second = (cDate.getSeconds() < 10 ? '0'+cDate.getSeconds() : cDate.getSeconds());
+        //YYYY-MM-DD HH:ii:SS
+        let currentDate = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate() + ' ' + cDate.getHours() + ':' + minute + ':' + second;
+        switch(s.type) {
+            case 'text':
+                msg = {
+                    date:currentDate,
+                    msg:this.state.msg,
+                    type:'text',
+                    userUid:this.props.uid, //usuário na sessão
+                };
+                break;
+            case 'image':
+                msg = {
+                    date:currentDate,
+                    msg:this.state.msg,
+                    type:'image',
+                    userUid:this.props.uid, //usuário na sessão
+                    url:'https://urlParaImagemNoStorage'
+                };
+                break;
+        }
+        this.props.sendMessage(this.state.msg, this.props.activeChat);
         s.msg = '';
         this.setState(s);
+    }
+
+    pickerImage(){
+        alert('pegar imagem aqui.');
     }
 
     render(){
@@ -49,15 +96,19 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
 
         return (
             <KeyboardAvoidingView style={styles.container} behavior={areaBehavior} keyboardVerticalOffset={areaOffset}>
+                {this.state.loading && <ActivityIndicator size="large" color="#104eb8"/>}
                 <FlatList
                     ref={(ref)=>{this.flatArea = ref}}
                     onContentSizeChange={()=>{this.flatArea.scrollToEnd({animated:true})}}
                     onLayout={()=>{this.flatArea.scrollToEnd({animated:true})}}
                     style={styles.chatArea}
                     data={this.props.messages}
-                    renderItem={({item})=><MensagemItem data={item} />}
+                    renderItem={({item})=><MessageItem data={item} />}
                 />
                 <View style={styles.sendArea}>
+                    <TouchableHighlight underlayColor={'#ffe51f'} style={styles.imagePickerButton} onPress={this.pickerImage}>
+                        <Image source={require('../../assets/images/icon_image_picker.png')} style={styles.sendButtonImage} />
+                    </TouchableHighlight>
                     <TextInput value={this.state.msg} style={styles.sendInput} onChangeText={(msg)=>{this.setState({msg})}} />
                     <TouchableHighlight underlayColor={'#2da832'} style={styles.sendButton} onPress={this.sendMsg}>
                         <Image source={require('../../assets/images/icon_send.png')} style={styles.sendButtonImage} />
@@ -103,6 +154,10 @@ const styles = StyleSheet.create({
         width:50,
         justifyContent:'center',
         alignItems:'center'
+    },
+    imagePickerButton:{
+        height:40,
+        width:40,
     },
     sendButtonImage:{
         height:40,
