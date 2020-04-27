@@ -11,6 +11,7 @@ import {
     TouchableHighlight,
     Image,
     ActivityIndicator,
+    Modal
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
@@ -39,13 +40,15 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         this.state = {
             msg:'',
             loading:true,
-            type:'image',
-            progress:0
+            progress:0,
+            modalVisible:false,
+            urlImagem:''
         };
 
         //faz o bind do comportamemto com o componente
         this.sendMsg = this.sendMsg.bind(this);
         this.pickerImage = this.pickerImage.bind(this);
+        this.setModalVisible = this.setModalVisible.bind(this);
     }
 
     componentDidMount(){
@@ -58,7 +61,7 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         this.props.monitorChatOff(this.props.activeChat);
     }
 
-    sendMsg(urlImage){ //parâmetro utilizado para type='image'
+    sendMsg(type, url){
         let s = this.state;
         let msg = '';
         let cDate = new Date;
@@ -67,7 +70,7 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         let second = (cDate.getSeconds() < 10 ? '0'+cDate.getSeconds() : cDate.getSeconds());
         //YYYY-MM-DD HH:ii:SS
         let currentDate = cDate.getFullYear() + '-' + (cDate.getMonth()+1)  + '-' + cDate.getDate() + ' ' + cDate.getHours() + ':' + minute + ':' + second;
-        switch(s.type) {
+        switch(type) {
             case 'text':
                 msg = {
                     date:currentDate,
@@ -82,7 +85,7 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                     msg:this.state.msg,
                     type:'image',
                     userUid:this.props.uid, //usuário na sessão
-                    url:urlImage
+                    url:url
                 };
                 break;
         }
@@ -111,15 +114,23 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                                 console.log('s.progress= ' + s.progress);
                                 this.setState(s);
                             },
-                            (urlImage)=>{
+                            (url)=>{
+                                console.log('Imagem salva= ' + url);
                                 let s = this.state;
                                 s.progress = 0;
                                 this.setState(s);
-                                this.sendMsg(urlImage);
+                                this.sendMsg('image', url);
                         });
                     })
             }
         })
+    }
+
+    setModalVisible(status, url){
+        let s = this.state;
+        s.modalVisible = status;
+        s.urlImagem = url;
+        this.setState(s);
     }
 
     render(){
@@ -136,7 +147,7 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                     onLayout={()=>{this.flatArea.scrollToEnd({animated:true})}}
                     style={styles.chatArea}
                     data={this.props.messages}
-                    renderItem={({item})=><MessageItem data={item} />}
+                        renderItem={({item})=><MessageItem data={item} onPressImage={(url)=>{this.setModalVisible(true, url)}} />}
                 />
                 {this.state.progress > 0 &&
                     <View style={styles.imageProgressArea}>
@@ -148,10 +159,17 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                         <Image source={require('../../assets/images/icon_image_picker.png')} style={styles.sendButtonImage} />
                     </TouchableHighlight>
                     <TextInput value={this.state.msg} style={styles.sendInput} onChangeText={(msg)=>{this.setState({msg})}} />
-                    <TouchableHighlight underlayColor={'#2da832'} style={styles.sendButton} onPress={this.sendMsg}>
+                    <TouchableHighlight underlayColor={'#2da832'} style={styles.sendButton} onPress={()=>{this.sendMsg('text')}} >
                         <Image source={require('../../assets/images/icon_send.png')} style={styles.sendButtonImage} />
                     </TouchableHighlight>
                 </View>
+                <Modal animationType="slide" transparent={false} visible={this.state.modalVisible} >
+                    <View styles={styles.modalContainer}>
+                        <TouchableHighlight onPress={()=>this.setModalVisible(false)}>
+                            <Image resizeMode="center" style={styles.modalImage} source={{uri:this.state.urlImagem}} />
+                        </TouchableHighlight>
+                    </View>
+                </Modal>
             </KeyboardAvoidingView>
         );
     }
@@ -207,5 +225,15 @@ const styles = StyleSheet.create({
     imgProgressBar:{
         height:10,
         backgroundColor:'#104eb8'
+    },
+    modalContainer:{
+        flex: 1,
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor: '#000000'
+    },
+    modalImage:{
+        width:'100%',
+        height:'100%'
     }
 });

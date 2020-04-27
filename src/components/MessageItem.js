@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import {StyleSheet, View, Text, Image, TouchableHighlight} from 'react-native';
 import {connect} from 'react-redux';
 
 export class MessageItem extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
@@ -45,7 +45,11 @@ export class MessageItem extends React.Component{ //retirar o default, ele vai p
         return(
             <View style={[styles.container, {backgroundColor:this.state.bgColor}, {alignSelf:this.state.alignSelf}]}>
                 {this.props.data.type === 'text' && <Text style={styles.msgText}>{this.props.data.msg}</Text>}
-                {this.props.data.type === 'image' && <Image style={styles.image} source={{uri:this.props.data.url}}/>}
+                {this.props.data.type === 'image' &&
+                    <TouchableHighlight onPress={()=>this.props.onPressImage(this.props.data.url)} >
+                        <Image style={styles.image} source={{uri:this.props.data.url}}/>
+                    </TouchableHighlight>
+                }
                 <Text style={styles.dateText}>{this.state.date}</Text>
             </View>
         );

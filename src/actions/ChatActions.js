@@ -135,7 +135,7 @@ export const monitorChatOn = (activeChat, callback) => {
                             date:childItem.val().date,
                             type:childItem.val().type,
                             msg:childItem.val().msg,
-                            uid:childItem.val().uid
+                            uid:childItem.val().userUid
                         });
                         break;
                     case 'image':
@@ -144,7 +144,7 @@ export const monitorChatOn = (activeChat, callback) => {
                             date:childItem.val().date,
                             type:childItem.val().type,
                             msg:childItem.val().msg,
-                            uid:childItem.val().uid,
+                            uid:childItem.val().userUid,
                             url:childItem.val().url
                         });
                         break;
