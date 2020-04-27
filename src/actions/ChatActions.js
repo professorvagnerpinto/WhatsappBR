@@ -35,11 +35,9 @@ export const criarChat = (user1key, user2key) => {
     return (dispatch) => {
         //criando o chat
         let pathChatUid = firebase.database().ref('chats').push();
-        pathChatUid.child('members').child(user1key).set({
-            id:user1key
-        });
-        pathChatUid.child('members').child(user2key).set({
-            id:user2key
+        pathChatUid.child('members').set({
+            uid1:user1key,
+            uid2:user2key
         });
 
         //associando o chat ao membro
@@ -98,6 +96,24 @@ export const setActiveChat = (itemKey) => {
         payload:{
             activeChat:itemKey
         }
+    };
+};
+
+export const sendImage = (blob, progressCallback, successCallback) => {
+    return() => { //como é assíncrono tem que colocar o callback para o redux-thunk, senão o Redux emite uma exceção
+        let imageName = firebase.database().ref('chats').push().key; //apenas para gerar um uid
+        let imageRef = firebase.storage().ref('images').child(imageName);
+        imageRef.put(blob, {contentType:'image/jpeg'})
+            .on('state_changed',
+                progressCallback,
+            (error)=>{
+                alert('Erro: ' + error.code);
+            },
+            ()=>{
+                imageRef.getDownloadURL().then((url)=>{
+                    successCallback(url);
+                });
+            });
     };
 };
 

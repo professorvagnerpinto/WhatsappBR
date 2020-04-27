@@ -12,9 +12,15 @@ import {
     Image,
     ActivityIndicator,
 } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+import RNFetchBlob from 'react-native-fetch-blob';
 import {connect} from 'react-redux';
 import MessageItem from '../components/MessageItem';
-import {monitorChatOff, monitorChatOn, sendMessage} from '../actions/ChatActions';
+import {monitorChatOff, monitorChatOn, sendMessage, sendImage} from '../actions/ChatActions';
+
+
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = RNFetchBlob.polyfill.Blob;
 
 export class Chat extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
 
@@ -33,7 +39,8 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         this.state = {
             msg:'',
             loading:true,
-            type:'text'
+            type:'image',
+            progress:0
         };
 
         //faz o bind do comportamemto com o componente
@@ -51,10 +58,9 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
         this.props.monitorChatOff(this.props.activeChat);
     }
 
-    sendMsg(){
+    sendMsg(urlImage){ //parâmetro utilizado para type='image'
         let s = this.state;
         let msg = '';
-        //TODO tirar o bug do zero, como em 17:09 (retirado, falta testar em um horário apropriado)
         let cDate = new Date;
         //antes formata para evitar 0x como x
         let minute = (cDate.getMinutes() < 10 ? '0'+cDate.getMinutes() : cDate.getMinutes());
@@ -76,17 +82,44 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                     msg:this.state.msg,
                     type:'image',
                     userUid:this.props.uid, //usuário na sessão
-                    url:'https://urlParaImagemNoStorage'
+                    url:urlImage
                 };
                 break;
         }
-        this.props.sendMessage(this.state.msg, this.props.activeChat);
+        this.props.sendMessage(msg, this.props.activeChat);
         s.msg = '';
         this.setState(s);
     }
 
     pickerImage(){
-        alert('pegar imagem aqui.');
+        ImagePicker.showImagePicker({}, (image) => {
+            if(image.uri){
+                let uri = image.uri.replace('file://', '');
+                RNFetchBlob.fs.readFile(uri, 'base64')
+                    .then((data)=>{
+                        return RNFetchBlob.polyfill.Blob.build(data, {type:'image/jpeg;BASE64'});
+                    })
+                    .then((blob)=>{
+                        this.props.sendImage(
+                            blob,
+                            (dataSnapshot)=>{
+                                //TODO há um bug no dataSnapshot.bytesTransferred, rever isso.
+                                let s = this.state;
+                                console.log('dataSnapshot.bytesTransferred= ' + dataSnapshot.bytesTransferred);
+                                console.log('dataSnapshot.totalBytes= ' + dataSnapshot.totalBytes);
+                                s.progress = (dataSnapshot.bytesTransferred / dataSnapshot.totalBytes) * 100;
+                                console.log('s.progress= ' + s.progress);
+                                this.setState(s);
+                            },
+                            (urlImage)=>{
+                                let s = this.state;
+                                s.progress = 0;
+                                this.setState(s);
+                                this.sendMsg(urlImage);
+                        });
+                    })
+            }
+        })
     }
 
     render(){
@@ -105,6 +138,11 @@ export class Chat extends React.Component{ //retirar o default, ele vai para o f
                     data={this.props.messages}
                     renderItem={({item})=><MessageItem data={item} />}
                 />
+                {this.state.progress > 0 &&
+                    <View style={styles.imageProgressArea}>
+                        <View style={[{width:this.state.progress + '%'} , styles.imgProgressBar]} />
+                    </View>
+                }
                 <View style={styles.sendArea}>
                     <TouchableHighlight underlayColor={'#ffe51f'} style={styles.imagePickerButton} onPress={this.pickerImage}>
                         <Image source={require('../../assets/images/icon_image_picker.png')} style={styles.sendButtonImage} />
@@ -126,7 +164,7 @@ const mapStateToProps = (state) => { //mapeia os states do reducer para as props
         messages:state.chat.activeChatMessages
     };
 };
-const ChatConnect = connect(mapStateToProps, {sendMessage, monitorChatOn, monitorChatOff})(Chat); //conecta os dois componentes (suas props)
+const ChatConnect = connect(mapStateToProps, {sendMessage, monitorChatOn, monitorChatOff, sendImage})(Chat); //conecta os dois componentes (suas props)
 export default ChatConnect; //exporta o componente como padrão
 
 const styles = StyleSheet.create({
@@ -162,5 +200,12 @@ const styles = StyleSheet.create({
     sendButtonImage:{
         height:40,
         width:40,
+    },
+    imageProgressArea:{
+        height:10
+    },
+    imgProgressBar:{
+        height:10,
+        backgroundColor:'#104eb8'
     }
 });

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import {connect} from 'react-redux';
 
 export class MessageItem extends React.Component{ //retirar o default, ele vai para o final, o redux é que será o default
@@ -41,10 +41,11 @@ export class MessageItem extends React.Component{ //retirar o default, ele vai p
     }
 
     render(){
+        console.log(this.props.data.type === 'text'? 'texto' : this.props.data.url);
         return(
             <View style={[styles.container, {backgroundColor:this.state.bgColor}, {alignSelf:this.state.alignSelf}]}>
                 {this.props.data.type === 'text' && <Text style={styles.msgText}>{this.props.data.msg}</Text>}
-                {this.props.data.type === 'image'&& <Text style={styles.msgText}>(Imagem aqui)</Text>}
+                {this.props.data.type === 'image' && <Image style={styles.image} source={{uri:this.props.data.url}}/>}
                 <Text style={styles.dateText}>{this.state.date}</Text>
             </View>
         );
@@ -75,5 +76,9 @@ const styles = StyleSheet.create({
         color:'#003c00',
         fontSize:8,
         alignSelf:'flex-end'
+    },
+    image:{
+        width:200,
+        height:200
     }
 });
